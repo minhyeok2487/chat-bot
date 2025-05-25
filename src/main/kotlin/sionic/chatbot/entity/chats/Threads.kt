@@ -6,7 +6,7 @@ import sionic.chatbot.entity.users.User
 
 @Entity
 @Table(name = "chat_threads")
-class Thread(
+class Threads(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
