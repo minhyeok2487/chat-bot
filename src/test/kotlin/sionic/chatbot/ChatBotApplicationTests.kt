@@ -1,10 +1,10 @@
-package sionic.minhyeok
+package sionic.chatbot
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class MinhyeokApplicationTests {
+class ChatBotApplicationTests {
 
 	@Test
 	fun contextLoads() {
