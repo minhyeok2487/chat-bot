@@ -15,9 +15,10 @@
     - csv
 
 ## To-Be
+- 사용자 ID(string)?? -> UUID
 - 스트림 응답...?
 - 글로벌 예외 핸들러
-- QueryDSL <- 아직까지 굳이?
+- QueryDSL -> 있어야할꺼 같음
 
 ## Gemini 코드리뷰
 - 로그인 실패 인증 처리 변경
