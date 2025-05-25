@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import sionic.chatbot.dto.UserDto
 import sionic.chatbot.entity.users.User
 import sionic.chatbot.entity.users.UserRepository
-import sionic.chatbot.grobal.security.JwtTokenProvider
+import sionic.chatbot.global.security.JwtTokenProvider
 import org.springframework.security.core.AuthenticationException
 
 @Service

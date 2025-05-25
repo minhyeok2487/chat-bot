@@ -1,4 +1,4 @@
-package sionic.chatbot.grobal.security
+package sionic.chatbot.global.security
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
