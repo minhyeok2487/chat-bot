@@ -21,4 +21,11 @@ class UserController(
         val response = ApiResponse.success<Unit>("회원가입이 성공적으로 완료되었습니다.")
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
+
+    @PostMapping("/login")
+    fun login(@RequestBody loginRequest: UserDto.LoginRequest): ResponseEntity<ApiResponse<UserDto.TokenResponse>> {
+        val tokenResponse = userService.login(loginRequest)
+        val response = ApiResponse.successWithData(tokenResponse, "로그인 성공")
+        return ResponseEntity.ok(response)
+    }
 }
