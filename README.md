@@ -18,3 +18,10 @@
 - 스트림 응답...?
 - 글로벌 예외 핸들러
 - QueryDSL <- 아직까지 굳이?
+
+## Gemini 코드리뷰
+- 로그인 실패 인증 처리 변경
+![img.png](img.png)
+
+- @Valid 추가하기
+![img_1.png](img_1.png)
