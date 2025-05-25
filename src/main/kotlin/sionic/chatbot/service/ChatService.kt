@@ -1,5 +1,6 @@
 package sionic.chatbot.service
 
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -118,5 +119,22 @@ class ChatService(
         }
 
         return PageImpl(responseList, pageable, pagedChats.totalElements)
+    }
+
+    @Transactional
+    fun deleteThread(threadId: Long) {
+        val currentUser = getCurrentAuthenticatedUser()
+
+        // 1. 스레드 조회
+        val threadToDelete = threadsRepository.findById(threadId)
+            .orElseThrow { EntityNotFoundException("요청하신 ID의 스레드를 찾을 수 없습니다: $threadId") }
+
+        // 2. 권한 확인: 현재 사용자가 스레드 소유자인지 확인
+        if (threadToDelete.user.id != currentUser.id) {
+            throw IllegalArgumentException("이 스레드를 삭제할 권한이 없습니다.")
+        }
+
+        // 3. 스레드 삭제
+        threadsRepository.delete(threadToDelete)
     }
 }

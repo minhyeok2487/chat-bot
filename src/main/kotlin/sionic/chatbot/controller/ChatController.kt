@@ -39,4 +39,12 @@ class ChatController(
         val threadsPage = chatService.searchChat(pageable)
         return ResponseEntity.ok(ApiResponse.successWithData(threadsPage, "대화 목록이 성공적으로 조회되었습니다."))
     }
+
+    @DeleteMapping("/threads/{threadId}")
+    fun deleteThread(
+        @PathVariable threadId: Long
+    ): ResponseEntity<ApiResponse<Unit>> {
+        chatService.deleteThread(threadId)
+        return ResponseEntity.ok(ApiResponse.success("스레드가 성공적으로 삭제되었습니다."))
+    }
 }

@@ -15,4 +15,7 @@ class Threads(
     @JoinColumn(name = "user_id", nullable = false)
     var user: User,
 
+    @OneToMany(mappedBy = "threads", cascade = [CascadeType.REMOVE], orphanRemoval = true, fetch = FetchType.LAZY)
+    var chats: MutableList<Chat> = mutableListOf()
+
 ) : BaseTimeEntity()
