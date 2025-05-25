@@ -1,5 +1,8 @@
 package sionic.chatbot.service
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.security.core.context.SecurityContextHolder // 현재 사용자 정보 가져오기
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
@@ -11,6 +14,7 @@ import sionic.chatbot.entity.chats.ThreadsRepository
 import sionic.chatbot.entity.chats.Threads
 import sionic.chatbot.entity.users.User
 import sionic.chatbot.entity.users.UserRepository
+import sionic.chatbot.entity.users.UserRole
 import java.time.LocalDateTime
 
 @Service
@@ -69,5 +73,50 @@ class ChatService(
             modelUsed = savedChat.modelUsed,
             createdAt = savedChat.createdAt
         )
+    }
+
+    @Transactional(readOnly = true)
+    fun searchChat(pageable: Pageable): Page<ChatDto.ThreadWithChatsResponse> {
+        val currentUser = getCurrentAuthenticatedUser()
+
+        // 1. 페이지네이션된 Chat 목록 조회
+        val pagedChats: Page<Chat> = if (currentUser.role == UserRole.ADMIN) {
+            chatRepository.findAllChatsDetailsAllUser(pageable)
+        } else {
+            chatRepository.findAllChatsDetailsByUser(currentUser, pageable)
+        }
+
+        val chatsOnPage: List<Chat> = pagedChats.content
+        if (chatsOnPage.isEmpty()) {
+            return Page.empty(pageable)
+        }
+
+        // 2. 조회된 Chat들을 Thread 기준으로 그룹화 (순서 유지를 위해 LinkedHashMap 사용)
+        val groupedByThreadEntity: Map<Threads, List<Chat>> = chatsOnPage.groupBy { it.threads }
+
+        // 3. DTO로 변환 (스레드 순서 유지를 위해 pagedChats에서 distinct threads를 순서대로 추출)
+        val distinctThreadsInOrder = chatsOnPage.map { it.threads }.distinct()
+
+        val responseList: List<ChatDto.ThreadWithChatsResponse> = distinctThreadsInOrder.map { thread ->
+            val chatsForThisThread = groupedByThreadEntity[thread] ?: emptyList()
+            val chatInfos = chatsForThisThread.map { chat ->
+                ChatDto.ChatInfo(
+                    chatId = chat.id,
+                    question = chat.question,
+                    answer = chat.answer,
+                    modelUsed = chat.modelUsed,
+                    chatCreatedAt = chat.createdAt
+                )
+            }
+            ChatDto.ThreadWithChatsResponse(
+                threadId = thread.id,
+                userId = thread.user.id,
+                userEmail = thread.user.name,
+                threadCreatedAt = thread.createdAt,
+                chats = chatInfos
+            )
+        }
+
+        return PageImpl(responseList, pageable, pagedChats.totalElements)
     }
 }
